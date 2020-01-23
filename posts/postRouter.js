@@ -3,22 +3,54 @@ const express = require('express');
 const db = require('./postDb');
 
 const router = express.Router();
-
+//=================================================================================================
 router.get('/', (req, res) => {
-  // do your magic!
+  db.get(req.query)
+    .then(go => {
+      res.status(200).json(go);
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).json({
+        message: 'error retrieving the database'
+      });
+    });
 });
-
-router.get('/:id', (req, res) => {
-  // do your magic!
+//=================================================================================================
+router.get('/:id', validateUserId,( req, res ) => {
+  res.status(200).json(req.go);
 });
-
-router.delete('/:id', (req, res) => {
-  // do your magic!
+//=================================================================================================
+router.delete('/:id', validateUserId, ( req, res ) => {
+  db.remove(req.params.id)
+    .then( count => {
+      if (count > 0) {
+        res.status(200).json({ message: 'The database has been nuked'});
+      } else {
+        res.status(404).json({ message: 'The database could not be found'});
+      }
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).json({ message: 'Error removing the db', err});
+    });
 });
-
-router.put('/:id', (req, res) => {
-  // do your magic!
+//=================================================================================================
+router.put('/:id', validateUserId, ( req, res ) => {
+  db.update(req.params.id, req.body)
+    .then(go => {
+      if (go) {
+        res.status(200).json(go);
+      } else {
+        res.status(404).json({ message: 'The database could not be found'});
+      }
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).json({ message: 'Error updating the database', err});
+    });
 });
+//=================================================================================================
 
 // custom middleware
 
