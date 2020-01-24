@@ -13,8 +13,8 @@ server.get('/', (req, res) => {
 //custom middleware             
 const middleware = [express.json(), helmet(), morgan('dev'), logger];
 server.use(middleware);
-server.use('/api/posts', postRouter);
-server.use('/api/users', userRouter);
+server.use('/api/users',userRouter, postRouter);
+// server.use('/api/users', userRouter);
 //=================================================================================================
 function logger(req, res, next) {
   const time = new Date();

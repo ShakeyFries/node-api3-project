@@ -48,7 +48,7 @@ router.post('/:id/users', ( req,res ) => {
     });
 });
 //================================= Get =======================================================
-router.get('/:id/posts', validateUserId, ( req,res ) => {
+router.get('/:id/posts', validatePost, ( req,res ) => {
   res.status(200).json(req.use);
 });
 //=================================================================================================
@@ -65,11 +65,11 @@ router.get('/', (req, res) => {
     });
 });
 //=================================================================================================
-router.get('/:id/posts', (req, res) => {
+router.get('/:id', validateUserId, ( req, res ) => {
   res.status(200).json(req.use);
 });
 //=================================================================================================
-router.delete('/:id', (req, res) => {
+router.delete('/:id', ( req, res ) => {
   User.remove(req.params.id)
     .then(count => {
       if (count > 0) {
@@ -108,7 +108,8 @@ router.put('/:id', (req, res) => {
 
 function validateUserId(req, res, next) {
   const {id} = req.params;
-  db.getById(id)
+  
+  User.getById(id)
     .then(use => {
       if(use) {
         req.use = use;
@@ -124,11 +125,34 @@ function validateUserId(req, res, next) {
 }
 
 function validateUser(req, res, next) {
-  // do your magic!
+  const body = req.body;
+  const { name } = body;
+
+  if(!body) {
+    res.status(400).json({message: "user error"});
+  }
+  if (!name) {
+    res.status(400).json({message: "user error"});
+  }
+  next();
 }
 
 function validatePost(req, res, next) {
-  // do your magic!
+  const {id} = req.params;
+  
+  User.getUserPosts(id)
+    .then(use => {
+      if(use) {
+        req.use = use;
+        next();
+      } else {
+        res.status(404).json({message: 'does not exist'});
+      }
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).json({message: 'exception', err})
+    });
 }
 
 module.exports = router;
