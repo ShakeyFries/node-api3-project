@@ -10,14 +10,16 @@ server.get('/', (req, res) => {
   res.send(`<h2>Let's write some middleware!</h2>`);
 });
 
-//custom middleware
+//custom middleware             
 const middleware = [express.json(), helmet(), morgan('dev'), logger];
 server.use(middleware);
 server.use('/api/posts', postRouter);
 server.use('/api/users', userRouter);
 //=================================================================================================
 function logger(req, res, next) {
-  console.log(`${req.method} Request`);
+  const time = new Date();
+
+  console.log(`Method:${req.method} URL:${req.url}, TimeStamp:${time}`);
   next();
 }
 //=================================================================================================
